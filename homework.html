@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework | SproutPlan</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script>if(localStorage.getItem('isLoggedIn') !== 'true') window.location.href = "index.html";</script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar"><nav><a href="dashboard.html" class="nav-link">🏠 Dashboard</a><a href="homework.html" class="nav-link active">📖 Homework</a></nav></aside>
+        <main class="main-area">
+            <form id="hwForm" class="grid-row">
+                <input type="text" id="taskInput" placeholder="Task" required><input type="date" id="dateInput" required>
+                <button type="submit">Add Task</button>
+            </form>
+            <table class="homework-table"><tbody id="hwBody"></tbody></table>
+        </main>
+    </div>
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
+        function render() {
+        document.getElementById('hwBody').innerHTML = tasks.map((t, i) => `<tr><td>${t.task}</td><td>${t.date}</td><td><button onclick="tasks.splice(${i},1); render();">Delete</button></td></tr>`).join('');
+        localStorage.setItem('myTasks', JSON.stringify(tasks));
+        }
+        document.getElementById('hwForm').onsubmit = (e) => { e.preventDefault(); tasks.push({task: document.getElementById('taskInput').value, date: document.getElementById('dateInput').value}); render(); };
+        render();
+    </script>
+</body>
+</html>
