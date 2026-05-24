@@ -6,7 +6,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap');
 
-        
+        /* Strictly no scrolling on the whole page */
         body, html {
             margin: 0;
             padding: 0;
@@ -23,7 +23,7 @@
             width: 100vw;
         }
 
-        // Sidebar //
+        /* Sidebar - Matches Dashboard perfectly */
         .sidebar {
             background: #111;
             color: white;
@@ -35,10 +35,11 @@
 
         .nav-link {
             color: #888;
-            padding: 15px 10px;
+            padding: 12px 10px;
             text-decoration: none;
             font-weight: 600;
             display: block;
+            font-size: 15px;
         }
 
             .nav-link.active {
@@ -51,10 +52,11 @@
             cursor: pointer;
             font-weight: 700;
             text-decoration: none;
-            padding: 15px 10px;
+            padding: 12px 10px;
+            font-size: 15px;
         }
 
-        
+        /* Main Content */
         .content {
             flex: 1;
             padding: 15px 25px;
@@ -64,7 +66,7 @@
             box-sizing: border-box;
         }
 
-        
+        /* Header Area */
         .header-row {
             display: flex;
             justify-content: space-between;
@@ -96,6 +98,7 @@
                 background: #ddd;
             }
 
+        /* Attendance Section */
         .attendance-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -145,7 +148,7 @@
                 color: white;
             }
 
-        
+        /* Form Bar */
         .form-bar {
             background: white;
             padding: 8px 15px;
@@ -178,8 +181,14 @@
             font-family: 'Outfit';
             font-weight: 600;
             font-size: 12px;
+            transition: 0.2s;
         }
 
+            .btn-save:hover {
+                background: #ff7eb3;
+            }
+
+        /* Timetable Columns */
         .timetable-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -202,7 +211,7 @@
             margin-bottom: 2px;
         }
 
-        
+        /* Class Cards */
         .class-card {
             background: white;
             border-radius: 12px;
@@ -222,7 +231,7 @@
                 border-radius: 12px 0 0 12px;
             }
 
-       
+        /* Edit Mode Styles */
         .editable {
             display: block;
             border-radius: 4px;
@@ -262,7 +271,7 @@
             display: flex;
         }
 
-        
+        /* Card Text */
         .class-time {
             font-weight: 600;
             color: #888;
@@ -392,7 +401,7 @@
     </div>
 
     <script>
-        // Default Courses
+        // 1. Setup Default Courses
         const defaultCourses = [
         { name: "IMS560", active: [1,2,3,4,5,6] }, { name: "IMS564", active: [1,2] },
         { name: "IMS565", active: [1,2,3] }, { name: "IMS566", active: [1,2,3,4,5,6,7] },
@@ -403,7 +412,7 @@
         let courses = JSON.parse(localStorage.getItem('sproutPlanCourses')) || defaultCourses;
         const container = document.getElementById('attendance-container');
 
-        // Render Cards
+        // 2. Render Attendance Grid
         function renderAttendance() {
         container.innerHTML = '';
         courses.forEach((course, index) => {
@@ -418,7 +427,7 @@
         updateDashboardChart();
         }
 
-        // Toggle Attendance Click
+        // 3. Handle Clicking a Week
         function toggleAttendance(courseIndex, weekNum, btnElement) {
         btnElement.classList.toggle('active');
         let course = courses[courseIndex];
@@ -433,7 +442,7 @@
         updateDashboardChart();
         }
 
-        // Calculate and Save for Dashboard
+        // 4. Calculate Bar Chart Data (Fixed for Decimals & Empty Days)
         function updateDashboardChart() {
         const dayMap = {
         0: ["IMS560", "IMS564"], // Mon
@@ -448,7 +457,7 @@
         for(let i=0; i<5; i++) {
         let dayCourses = dayMap[i];
         if(dayCourses.length === 0) {
-        chartData[i] = 0; // Fixed! Now correctly outputs 0 for days with no classes.
+        chartData[i] = 0; // Fixed: Sets Friday to 0
         continue;
         }
 
@@ -460,7 +469,9 @@
         if(c) activeCount += c.active.length;
         });
 
-        chartData[i] = Math.round((activeCount / totalPossible) * 10);
+        // Fixed: Allows 1 decimal point so the bar grows gradually (e.g. 3.2)
+        let exactScore = (activeCount / totalPossible) * 10;
+        chartData[i] = parseFloat(exactScore.toFixed(1));
         }
 
         localStorage.setItem('sproutPlanChartData', JSON.stringify(chartData));
@@ -468,7 +479,7 @@
 
         renderAttendance();
 
-        // --- Edit Timetable Functions ---
+        // 5. Timetable Edit Mode
         let isEditing = false;
         function toggleEditMode() {
         isEditing = !isEditing;
@@ -488,8 +499,12 @@
         }
         }
 
-        function deleteCard(btnElement) { btnElement.parentElement.remove(); }
+        // 6. Delete a Timetable Card
+        function deleteCard(btnElement) {
+        btnElement.parentElement.remove();
+        }
 
+        // 7. Add a New Timetable Card
         function addClass() {
         const dayNum = document.getElementById('day-input').value;
         const start = document.getElementById('time-start').value || "--:--";
@@ -510,6 +525,8 @@
         `;
 
         column.appendChild(newCard);
+
+        // Clear inputs
         document.getElementById('course-input').value = "";
         document.getElementById('room-input').value = "";
         }
