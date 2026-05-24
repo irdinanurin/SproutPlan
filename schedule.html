@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Schedule | SproutPlan</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* (Insert your original CSS styles here to keep the design identical) */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: #fdf6e9;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .app-container {
+            display: grid !important;
+            grid-template-columns: 200px 1fr !important;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .sidebar {
+            background: #111 !important;
+            padding: 50px 15px 20px 15px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            height: 100vh !important;
+            width: 200px !important;
+            box-sizing: border-box !important;
+        }
+
+        .main-area {
+            padding: 15px 25px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            height: 100vh !important;
+            box-sizing: border-box !important;
+            gap: 6px !important;
+            overflow: hidden !important;
+        }
+
+        .att-zone {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 6px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .att-row {
+            background: white !important;
+            padding: 6px 12px !important;
+            border-radius: 15px !important;
+            border: 1px solid #eee !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .w-dot {
+            width: 13px !important;
+            height: 13px !important;
+            border-radius: 3px !important;
+            font-size: 6.5px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            background: #f0f0f0 !important;
+            color: #999 !important;
+            font-weight: 700 !important;
+        }
+
+            .w-dot.p {
+                background: #8b5cf6 !important;
+                color: white !important;
+            }
+
+            .w-dot.a {
+                background: #ff4d4d !important;
+                color: white !important;
+            }
+
+        .form-mini {
+            display: grid !important;
+            grid-template-columns: 100px 90px 90px 1fr 1fr 70px !important;
+            gap: 6px !important;
+            padding: 10px !important;
+            background: white !important;
+            border-radius: 15px !important;
+            border: 1px solid #eee !important;
+            flex-shrink: 0 !important;
+        }
+
+        .save-btn {
+            background: #111 !important;
+            color: white !important;
+            border-radius: 10px !important;
+            border: none !important;
+            padding: 0 !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            height: 28px !important;
+            font-size: 11px !important;
+        }
+
+        .tt-grid {
+            display: grid !important;
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 10px !important;
+            margin-top: 5px !important;
+            flex-grow: 1 !important;
+            overflow: hidden !important;
+        }
+
+        .c-card {
+            background: white !important;
+            padding: 8px 10px !important;
+            border-radius: 15px !important;
+            border: 1px solid #eee !important;
+            border-left: 4px solid #8b5cf6 !important;
+            margin-bottom: 6px !important;
+            position: relative !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/150?u=nurin" alt="Profile" id="profileImage">
+                <span class="user-name">Nurin Irdina</span>
+            </div>
+            <nav style="width: 100%;">
+                <a href="dashboard.html" class="nav-link">🏠 Dashboard</a>
+                <a href="schedule.html" class="nav-link active">📅 Schedule</a>
+                <a href="homework.html" class="nav-link">📖 Homework</a>
+            </nav>
+        </aside>
+        <main class="main-area">
+            <h2 style="margin:0; font-size: 20px;">My Schedule & Attendance 📅</h2>
+            <div id="attendanceZone" class="att-zone"></div>
+            <form id="classForm" class="form-mini">
+                <select id="dayInput"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
+                <input type="time" id="startInput" required><input type="time" id="endInput" required>
+                <input type="text" id="taskInput" placeholder="Course" required><input type="text" id="locInput" placeholder="Room" required>
+                <button type="submit" class="save-btn">Save</button>
+            </form>
+            <div id="scheduleGrid" class="tt-grid"></div>
+        </main>
+    </div>
+
+    <script>
+        let schedule = JSON.parse(localStorage.getItem('mySchedule')) || [];
+
+        function render() {
+        // Render Attendance
+        const attZone = document.getElementById('attendanceZone');
+        attZone.innerHTML = schedule.map((s, i) => `
+        <div class="att-row"><span>${s.task}</span>
+        <div class="week-box">${Array.from({length:14}, (_,w) => `<a href="#" onclick="toggleAtt(${i}, ${w+1})" class="w-dot ${(s.att[w+1]||'r')}">${w+1}</a>`).join('')}</div>
+        </div>`).join('');
+
+        // Render Grid
+        document.getElementById('scheduleGrid').innerHTML = ['Monday','Tuesday','Wednesday','Thursday','Friday'].map(d => `
+        <div><span class="day-lbl">${d.substring(0,3)}</span>
+        ${schedule.filter(s=>s.day===d).map(s => `
+        <div class="c-card"><b>${s.start} - ${s.end}</b><span>${s.task}</span><small>📍 ${s.loc}</small>
+        <div class="card-actions"><a href="#" onclick="deleteClass(${schedule.indexOf(s)})">❌</a></div></div>`).join('')}
+        </div>`).join('');
+        }
+
+        document.getElementById('classForm').onsubmit = (e) => {
+        e.preventDefault();
+        schedule.push({ day: document.getElementById('dayInput').value, start: document.getElementById('startInput').value, end: document.getElementById('endInput').value, task: document.getElementById('taskInput').value, loc: document.getElementById('locInput').value, att: {} });
+        localStorage.setItem('mySchedule', JSON.stringify(schedule));
+        render();
+        };
+
+        function toggleAtt(idx, week) {
+        const cur = schedule[idx].att[week] || 'r';
+        schedule[idx].att[week] = (cur === 'r' ? 'p' : (cur === 'p' ? 'a' : 'r'));
+        localStorage.setItem('mySchedule', JSON.stringify(schedule));
+        render();
+        }
+
+        function deleteClass(idx) { schedule.splice(idx, 1); localStorage.setItem('mySchedule', JSON.stringify(schedule)); render(); }
+        render();
+    </script>
+</body>
+</html>
