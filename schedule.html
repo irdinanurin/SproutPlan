@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SproutPlan | Schedule</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap');
+
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            background: #fdf6e9;
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        // Sidebar //
+        .sidebar {
+            background: #111;
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 40px 40px 0;
+        }
+
+        .nav-link {
+            color: #888;
+            padding: 15px 10px;
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+        }
+
+            .nav-link.active {
+                color: white;
+            }
+
+        .logout {
+            margin-top: auto;
+            color: #ff7eb3;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 15px 10px;
+        }
+
+        
+        .content {
+            flex: 1;
+            padding: 15px 25px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        h2 {
+            margin: 0;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .btn-edit {
+            background: #eee;
+            color: #333;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Outfit';
+            font-weight: 700;
+            transition: 0.2s;
+            font-size: 13px;
+        }
+
+            .btn-edit:hover {
+                background: #ddd;
+            }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            flex-shrink: 0;
+            margin-bottom: 12px;
+        }
+
+        .course-card {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+        }
+
+        .course-name {
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: block;
+            color: #333;
+        }
+
+        .weeks {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+        }
+
+        .week-btn {
+            width: 18px;
+            height: 18px;
+            font-size: 9px;
+            font-weight: 700;
+            border-radius: 50%;
+            background: #eee;
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+            .week-btn.active {
+                background: #ff7eb3;
+                color: white;
+            }
+
+        
+        .form-bar {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+            align-items: center;
+            flex-shrink: 0;
+            margin-bottom: 12px;
+        }
+
+            .form-bar select, .form-bar input {
+                border: 1px solid #eee;
+                padding: 6px 10px;
+                border-radius: 10px;
+                font-family: 'Outfit';
+                flex: 1;
+                outline: none;
+                font-size: 12px;
+            }
+
+        .btn-save {
+            background: #111;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Outfit';
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .day-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .day-label {
+            font-weight: 700;
+            color: #ff7eb3;
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        
+        .class-card {
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+            .class-card::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: #ff7eb3;
+                border-radius: 12px 0 0 12px;
+            }
+
+       
+        .editable {
+            display: block;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .editing-active .editable {
+            border: 1px dashed #ff7eb3;
+            background: #fff0f5;
+            padding: 2px;
+            margin: -2px;
+        }
+
+            .editing-active .editable:hover {
+                background: #ffe4f0;
+                cursor: text;
+            }
+
+        .delete-btn {
+            display: none;
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 9px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editing-active .delete-btn {
+            display: flex;
+        }
+
+        
+        .class-time {
+            font-weight: 600;
+            color: #888;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+
+        .class-id {
+            font-weight: 700;
+            color: #333;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .class-loc {
+            color: #aaa;
+            font-size: 9px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <h2 style="color: #ff7eb3; margin-top: 0; margin-bottom: 30px;">SproutPlan</h2>
+            <a href="dashboard.html" class="nav-link">🏠 Dashboard</a>
+            <a href="schedule.html" class="nav-link active">📅 Schedule</a>
+            <a href="homework.html" class="nav-link">📖 Homework</a>
+            <a href="index.html" class="logout">🚪 Logout</a>
+        </aside>
+
+        <main class="content">
+
+            <div class="header-row">
+                <h2>My Schedule & Attendance 📅</h2>
+                <button class="btn-edit" id="editToggleBtn" onclick="toggleEditMode()">✏️ Edit Timetable</button>
+            </div>
+
+            <div class="attendance-grid" id="attendance-container"></div>
+
+            <div class="form-bar">
+                <select id="day-input">
+                    <option value="1">Monday</option>
+                    <option value="2">Tuesday</option>
+                    <option value="3">Wednesday</option>
+                    <option value="4">Thursday</option>
+                    <option value="5">Friday</option>
+                </select>
+                <input type="time" id="time-start">
+                <input type="time" id="time-end">
+                <input type="text" id="course-input" placeholder="Course Code">
+                <input type="text" id="room-input" placeholder="Room/Location">
+                <button class="btn-save" onclick="addClass()">Save</button>
+            </div>
+
+            <div class="timetable-grid" id="timetable">
+                <div class="day-column" id="day-1">
+                    <span class="day-label">MON</span>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">08:00 - 10:00</span>
+                        <span class="class-id editable">IMS560</span>
+                        <span class="class-loc editable">📍 MAKMAL KOMPUTER 8</span>
+                    </div>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">14:00 - 17:00</span>
+                        <span class="class-id editable">IMS564</span>
+                        <span class="class-loc editable">📍 SMART CLASSROOM IM</span>
+                    </div>
+                </div>
+
+                <div class="day-column" id="day-2">
+                    <span class="day-label">TUE</span>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">08:00 - 11:00</span>
+                        <span class="class-id editable">IMS565</span>
+                        <span class="class-loc editable">📍 BILIK KULIAH 19</span>
+                    </div>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">12:00 - 16:00</span>
+                        <span class="class-id editable">IMS566</span>
+                        <span class="class-loc editable">📍 MAKMAL KOMPUTER 6</span>
+                    </div>
+                </div>
+
+                <div class="day-column" id="day-3">
+                    <span class="day-label">WED</span>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">08:00 - 10:00</span>
+                        <span class="class-id editable">LCC501</span>
+                        <span class="class-loc editable">📍 MAKMAL KOMPUTER 4</span>
+                    </div>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">12:00 - 14:00</span>
+                        <span class="class-id editable">TIC451</span>
+                        <span class="class-loc editable">📍 BILIK KULIAH 62</span>
+                    </div>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">16:00 - 18:00</span>
+                        <span class="class-id editable">CTU554</span>
+                        <span class="class-loc editable">📍 BILIK KULIAH 7</span>
+                    </div>
+                </div>
+
+                <div class="day-column" id="day-4">
+                    <span class="day-label">THU</span>
+                    <div class="class-card">
+                        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+                        <span class="class-time editable">14:00 - 16:00</span>
+                        <span class="class-id editable">IMS561</span>
+                        <span class="class-loc editable">📍 MAKMAL KOMPUTER 7</span>
+                    </div>
+                </div>
+
+                <div class="day-column" id="day-5">
+                    <span class="day-label">FRI</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Default Courses
+        const defaultCourses = [
+        { name: "IMS560", active: [1,2,3,4,5,6] }, { name: "IMS564", active: [1,2] },
+        { name: "IMS565", active: [1,2,3] }, { name: "IMS566", active: [1,2,3,4,5,6,7] },
+        { name: "LCC501", active: [1,2,3,4,5,6,7] }, { name: "TIC451", active: [1,2] },
+        { name: "CTU554", active: [1,2,3,4,5,6,7] }, { name: "IMS561", active: [1,2,3] }
+        ];
+
+        let courses = JSON.parse(localStorage.getItem('sproutPlanCourses')) || defaultCourses;
+        const container = document.getElementById('attendance-container');
+
+        // Render Cards
+        function renderAttendance() {
+        container.innerHTML = '';
+        courses.forEach((course, index) => {
+        let html = `<div class="course-card"><span class="course-name">${course.name}</span><div class="weeks">`;
+        for (let i = 1; i <= 14; i++) {
+        const isActive = course.active.includes(i) ? 'active' : '';
+        html += `<div class="week-btn ${isActive}" onclick="toggleAttendance(${index}, ${i}, this)">${i}</div>`;
+        }
+        html += `</div></div>`;
+        container.innerHTML += html;
+        });
+        updateDashboardChart();
+        }
+
+        // Toggle Attendance Click
+        function toggleAttendance(courseIndex, weekNum, btnElement) {
+        btnElement.classList.toggle('active');
+        let course = courses[courseIndex];
+
+        if (btnElement.classList.contains('active')) {
+        if (!course.active.includes(weekNum)) course.active.push(weekNum);
+        } else {
+        course.active = course.active.filter(w => w !== weekNum);
+        }
+
+        localStorage.setItem('sproutPlanCourses', JSON.stringify(courses));
+        updateDashboardChart();
+        }
+
+        // Calculate and Save for Dashboard
+        function updateDashboardChart() {
+        const dayMap = {
+        0: ["IMS560", "IMS564"], // Mon
+        1: ["IMS565", "IMS566"], // Tue
+        2: ["LCC501", "TIC451", "CTU554"], // Wed
+        3: ["IMS561"], // Thu
+        4: [] // Fri
+        };
+
+        let chartData = [0, 0, 0, 0, 0];
+
+        for(let i=0; i<5; i++) {
+        let dayCourses = dayMap[i];
+        if(dayCourses.length === 0) {
+        chartData[i] = 0; // Fixed! Now correctly outputs 0 for days with no classes.
+        continue;
+        }
+
+        let totalPossible = dayCourses.length * 14;
+        let activeCount = 0;
+
+        dayCourses.forEach(cName => {
+        let c = courses.find(x => x.name === cName);
+        if(c) activeCount += c.active.length;
+        });
+
+        chartData[i] = Math.round((activeCount / totalPossible) * 10);
+        }
+
+        localStorage.setItem('sproutPlanChartData', JSON.stringify(chartData));
+        }
+
+        renderAttendance();
+
+        // --- Edit Timetable Functions ---
+        let isEditing = false;
+        function toggleEditMode() {
+        isEditing = !isEditing;
+        const btn = document.getElementById('editToggleBtn');
+        const grid = document.getElementById('timetable');
+
+        if (isEditing) {
+        btn.innerHTML = "✅ Save Layout";
+        btn.style.background = "#b4eeb4";
+        grid.classList.add("editing-active");
+        document.querySelectorAll('.editable').forEach(el => el.setAttribute('contenteditable', 'true'));
+        } else {
+        btn.innerHTML = "✏️ Edit Timetable";
+        btn.style.background = "#eee";
+        grid.classList.remove("editing-active");
+        document.querySelectorAll('.editable').forEach(el => el.setAttribute('contenteditable', 'false'));
+        }
+        }
+
+        function deleteCard(btnElement) { btnElement.parentElement.remove(); }
+
+        function addClass() {
+        const dayNum = document.getElementById('day-input').value;
+        const start = document.getElementById('time-start').value || "--:--";
+        const end = document.getElementById('time-end').value || "--:--";
+        const course = document.getElementById('course-input').value;
+        const room = document.getElementById('room-input').value;
+
+        if (course.trim() === "") { alert("Please enter a course name!"); return; }
+
+        const column = document.getElementById(`day-${dayNum}`);
+        const newCard = document.createElement('div');
+        newCard.className = 'class-card';
+        newCard.innerHTML = `
+        <button class="delete-btn" onclick="deleteCard(this)">X</button>
+        <span class="class-time editable" contenteditable="${isEditing ? 'true' : 'false'}">${start} - ${end}</span>
+        <span class="class-id editable" contenteditable="${isEditing ? 'true' : 'false'}">${course}</span>
+        <span class="class-loc editable" contenteditable="${isEditing ? 'true' : 'false'}">📍 ${room || 'TBA'}</span>
+        `;
+
+        column.appendChild(newCard);
+        document.getElementById('course-input').value = "";
+        document.getElementById('room-input').value = "";
+        }
+    </script>
+</body>
+</html>
