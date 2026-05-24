@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework | SproutPlan</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #fdf6e9;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .app-container {
+            display: grid !important;
+            grid-template-columns: 200px 1fr !important;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background: #111 !important;
+            padding: 50px 15px 20px 15px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            height: 100vh !important;
+            width: 200px !important;
+            box-sizing: border-box !important;
+        }
+
+        .user-profile {
+            text-align: center !important;
+            margin-bottom: 20px !important;
+            width: 100%;
+        }
+
+            .user-profile img {
+                width: 110px !important;
+                height: 110px !important;
+                border-radius: 25px !important;
+                object-fit: cover;
+                border: 3px solid #333;
+                margin-bottom: 8px;
+            }
+
+        .user-name {
+            font-size: 1.05rem !important;
+            font-weight: 700;
+            color: white !important;
+            display: block;
+            margin: 0;
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+            .nav-link.active {
+                background: #222;
+                color: white;
+            }
+
+        .main-area {
+            padding: 25px !important;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            gap: 15px;
+            overflow-y: auto !important;
+            box-sizing: border-box;
+        }
+
+        .grid-row {
+            display: grid;
+            grid-template-columns: 1fr 240px 140px;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-box {
+            padding: 12px 18px !important;
+            border-radius: 15px !important;
+            border: 1px solid #eee !important;
+            background: white !important;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Outfit';
+            font-size: 14px;
+        }
+
+        .add-btn {
+            background: #000 !important;
+            color: #fff !important;
+            border-radius: 15px !important;
+            padding: 12px !important;
+            border: none !important;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+
+        .homework-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .homework-table td {
+                padding: 15px 10px;
+                border-bottom: 1px solid #eee;
+            }
+
+        .status-pill {
+            border-radius: 10px;
+            border: none;
+            padding: 6px 12px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/150?u=nurin" alt="Profile">
+                <span class="user-name">Nurin Irdina</span>
+            </div>
+            <nav style="width: 100%;">
+                <a href="dashboard.html" class="nav-link">🏠 Dashboard</a>
+                <a href="schedule.html" class="nav-link">📅 Schedule</a>
+                <a href="homework.html" class="nav-link active">📖 Homework</a>
+            </nav>
+        </aside>
+
+        <main class="main-area">
+            <header>
+                <h2 style="margin:0; font-size: 24px;">Homework List ✅</h2>
+            </header>
+
+            <div class="grid-row">
+                <input type="text" class="input-box" placeholder="New assignment...">
+                <input type="date" class="input-box">
+                <button class="add-btn">Add Task</button>
+            </div>
+
+            <div class="card" style="padding:15px !important;">
+                <table class="homework-table">
+                    <thead>
+                        <tr style="text-align:left; font-size: 12px; border-bottom: 2px solid #eee;">
+                            <th style="padding: 10px;">Task</th>
+                            <th style="padding: 10px;">Due Date</th>
+                            <th style="padding: 10px;">Status</th>
+                            <th style="padding: 10px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hwBody">
+                        <tr>
+                            <td style="font-size:14px;"><b>Complete UX Case Study</b></td>
+                            <td style="font-size:13px;">28 May 2026</td>
+                            <td>
+                                <select class="status-pill">
+                                    <option>To-Do</option>
+                                    <option>In Progress</option>
+                                    <option>Done</option>
+                                </select>
+                            </td>
+                            <td><a href="#" style="color:#ff4d4d; text-decoration:none; font-size: 18px;">&times;</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
